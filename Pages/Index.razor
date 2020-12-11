@@ -8,18 +8,22 @@
 
 <h1>Christmas!</h1>
 
-<p>@Message</p>
+<p>@DisplayMessage</p>
 
-@if (!string.IsNullOrWhiteSpace(EncryptedMessage))
+@if (ShowEncryptor)
 {
-    <a href="/christmas/@(EncryptedMessage)">New message</a>
+    <input placeholder="Enter message" @oninput="OnMessageInput"/>
+
+    <a href="/@(EncryptedMessage)">@EncryptedMessage</a>
 }
 
 @code {
     [Parameter]
     public string UrlMessage { get; set; }
 
-    public string Message { get; set; }
+    public string DisplayMessage { get; set; }
+
+    public bool ShowEncryptor { get; set; }
 
     public string EncryptedMessage { get; set; }
 
@@ -27,18 +31,23 @@
     {
         if (string.IsNullOrEmpty(this.UrlMessage))
         {
-            this.Message = "Hello";
+            this.DisplayMessage = "Hello";
         }
         else
         {
-            this.Message = Decrypt(this.UrlMessage);
+            this.DisplayMessage = Decrypt(this.UrlMessage);
         }
 
         var query = new Uri(NavigationManager.Uri).Query;
         if (QueryHelpers.ParseQuery(query).TryGetValue("encrypt", out var value))
         {
-            this.EncryptedMessage = Uri.EscapeDataString(Encrypt(value));
+            this.ShowEncryptor = true;
         }
+    }
+
+    private void OnMessageInput(ChangeEventArgs e)
+    {
+        this.EncryptedMessage = Uri.EscapeDataString(Encrypt(e.Value.ToString()));
     }
 
     // Really doesn't matter that this is public/silly
