@@ -20,11 +20,8 @@ jobs:
       with:
         dotnet-version: '5.0.x'
 
-    - name: Build with dotnet
-      run: dotnet build --configuration Release
-
     - name: dotnet publish
-      run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+      run: dotnet publish -c Release -r linux-x64 -o ${{env.DOTNET_ROOT}}/colinandlaura-pub
 
     - name: Deploy to Azure Web App
       uses: azure/webapps-deploy@v2
@@ -32,4 +29,4 @@ jobs:
         app-name: 'colinandlaura'
         slot-name: 'production'
         publish-profile: ${{ secrets.AzureAppService_PublishProfile_37abcc305c5a484ea66fb471b50de3c7 }}
-        package: ${{env.DOTNET_ROOT}}/myapp 
+        package: ${{env.DOTNET_ROOT}}/colinandlaura-pub 
