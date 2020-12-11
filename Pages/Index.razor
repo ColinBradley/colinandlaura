@@ -1,7 +1,80 @@
-@page "/"
+@page "/{UrlMessage?}"
+@using System
+@using System.Text
+@using System.Security.Cryptography
+@using System.IO
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager NavigationManager
 
-<h1>Hello, world!</h1>
+<h1>Christmas!</h1>
 
-Welcome to your new app.
+<p>@Message</p>
 
-<SurveyPrompt Title="How is Blazor working for you?" />
+@if (!string.IsNullOrWhiteSpace(EncryptedMessage))
+{
+    <a href="/christmas/@(EncryptedMessage)">New message</a>
+}
+
+@code {
+    [Parameter]
+    public string UrlMessage { get; set; }
+
+    public string Message { get; set; }
+
+    public string EncryptedMessage { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (string.IsNullOrEmpty(this.UrlMessage))
+        {
+            this.Message = "Hello";
+        }
+        else
+        {
+            this.Message = Decrypt(this.UrlMessage);
+        }
+
+        var query = new Uri(NavigationManager.Uri).Query;
+        if (QueryHelpers.ParseQuery(query).TryGetValue("encrypt", out var value))
+        {
+            this.EncryptedMessage = Uri.EscapeDataString(Encrypt(value));
+        }
+    }
+
+    // Really doesn't matter that this is public/silly
+    public static readonly byte[] DefaultCryptographicKey = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
+    public static readonly byte[] DefaultCryptographicInitializationVector = {101 ,102, 103, 104, 105, 106, 107, 108, 109,
+        110, 111, 112, 113, 114, 115, 116};
+
+    public static String Encrypt(string plainTextString)
+    {
+        using var cryptographicAlgorithm = Aes.Create();
+        using var encryptor = cryptographicAlgorithm.CreateEncryptor(DefaultCryptographicKey,
+            DefaultCryptographicInitializationVector);
+
+        var encryptMemoryStream = new MemoryStream();
+        using (var encryptCryptoStream = new CryptoStream(encryptMemoryStream, encryptor, CryptoStreamMode.Write))
+        {
+            var plainTextByte = Encoding.UTF8.GetBytes(plainTextString);
+            encryptCryptoStream.Write(plainTextByte, 0, plainTextByte.Length);
+        }
+
+        return Convert.ToBase64String(encryptMemoryStream.ToArray());
+    }
+
+    public static String Decrypt(string cipherTextString)
+    {
+        using var cryptographicAlgorithm = Aes.Create();
+        using var decryptor = cryptographicAlgorithm.CreateDecryptor(DefaultCryptographicKey,
+            DefaultCryptographicInitializationVector);
+
+        var decryptMemoryStream = new MemoryStream();
+        using (var decryptCryptoStream = new CryptoStream(decryptMemoryStream, decryptor, CryptoStreamMode.Write))
+        {
+            var cipherTextByte = Convert.FromBase64String(cipherTextString);
+            decryptCryptoStream.Write(cipherTextByte, 0, cipherTextByte.Length);
+        }
+
+        return Encoding.UTF8.GetString(decryptMemoryStream.ToArray());
+    }
+}
