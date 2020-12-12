@@ -1,4 +1,4 @@
-@page "/{UrlMessage?}"
+@page "/"
 @using System
 @using System.Text
 @using System.Security.Cryptography
@@ -19,13 +19,10 @@
 {
     <textarea placeholder="Enter message" @oninput="OnMessageInput" />
 
-    <a href="/@(EncryptedMessage)">@EncryptedMessage</a>
+    <a href="/?message=@(EncryptedMessage)">@EncryptedMessage</a>
 }
 
 @code {
-    [Parameter]
-    public string UrlMessage { get; set; }
-
     public string DisplayMessage { get; set; }
 
     public bool ShowEncryptor { get; set; }
@@ -34,17 +31,17 @@
 
     protected override void OnInitialized()
     {
-        if (string.IsNullOrEmpty(this.UrlMessage))
+        var query = QueryHelpers.ParseQuery(new Uri(NavigationManager.Uri).Query);
+        if (query.TryGetValue("message", out var value))
         {
-            this.DisplayMessage = "Hello";
+            this.DisplayMessage = Decrypt(value);
         }
         else
         {
-            this.DisplayMessage = Decrypt(this.UrlMessage);
+            this.DisplayMessage = "Hiya!";
         }
 
-        var query = new Uri(NavigationManager.Uri).Query;
-        if (QueryHelpers.ParseQuery(query).TryGetValue("write", out var value))
+        if (query.TryGetValue("write", out _))
         {
             this.ShowEncryptor = true;
         }
