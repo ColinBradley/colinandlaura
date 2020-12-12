@@ -6,13 +6,18 @@
 @using Microsoft.AspNetCore.WebUtilities
 @inject NavigationManager NavigationManager
 
-<h1>Christmas!</h1>
+<div class=festive-images-container>
+    <img alt="Lovely festive image of Colin and Laura" src="/img/us/1.jpg" style="animation-delay:10s">
+    <img alt="Lovely festive image of Colin and Laura 2" src="/img/us/2.jpg" style="animation-delay:5s">
+    <img alt="Lovely festive image of Colin and Laura 3" src="/img/us/3.jpg">
+    <div class=cover></div>
+</div>
 
-<p>@DisplayMessage</p>
+<p class=message>@DisplayMessage</p>
 
 @if (ShowEncryptor)
 {
-    <input placeholder="Enter message" @oninput="OnMessageInput"/>
+    <textarea placeholder="Enter message" @oninput="OnMessageInput" />
 
     <a href="/@(EncryptedMessage)">@EncryptedMessage</a>
 }
@@ -39,7 +44,7 @@
         }
 
         var query = new Uri(NavigationManager.Uri).Query;
-        if (QueryHelpers.ParseQuery(query).TryGetValue("encrypt", out var value))
+        if (QueryHelpers.ParseQuery(query).TryGetValue("write", out var value))
         {
             this.ShowEncryptor = true;
         }

@@ -14,12 +14,21 @@
     <title>Colin and Laura</title>
     <base href="~/" />
     <link href="css/site.css" rel="stylesheet" />
+    <link href="colinandlaura.styles.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Langar&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
     <script src="_framework/blazor.server.js"></script>
+
+    <script>
+        Blazor.defaultReconnectionHandler._reconnectCallback = function (d) {
+            document.location.reload();
+        }
+    </script>
 </body>
 
 </html>
