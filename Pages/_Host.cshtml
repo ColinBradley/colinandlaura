@@ -14,6 +14,7 @@
     <title>Colin and Laura</title>
     <base href="~/" />
     <link href="css/site.css" rel="stylesheet" />
+    <link href="css/snow.css" rel="stylesheet" />
     <link href="colinandlaura.styles.css" rel="stylesheet" />
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&display=swap" rel="stylesheet">
@@ -22,6 +23,9 @@
 <body>
     <component type="typeof(App)" render-mode="ServerPrerendered" />
 
+    <div id="snowflakeContainer">
+        <span class="snowflake"></span>
+    </div>
     <script src="_framework/blazor.server.js"></script>
 
     <script>
@@ -29,6 +33,8 @@
             document.location.reload();
         }
     </script>
+
+    <script src="/js/snow.js"></script>
 </body>
 
 </html>
